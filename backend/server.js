@@ -1,8 +1,9 @@
 import express from "express";
 
 const app = express();
+const PORT = process.env.PORT;
 
-app.listen(3000, () => {
+app.listen(PORT, () => {
 	console.log("App Started on port 3000");
 });
 
