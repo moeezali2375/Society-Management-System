@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-const connectionString = "mongodb://127.0.0.1:27017/SMS";
+const connectionString = process.env.CSTRING || "mongodb://127.0.0.1:27017/SMS";
 const exp = mongoose
 	.connect(connectionString)
 	.then(() => console.log("Db connected!"))
