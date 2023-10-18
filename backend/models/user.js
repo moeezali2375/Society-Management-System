@@ -1,7 +1,16 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
 	username: {
+		type: String,
+		required: true,
+		unique: true,
+	},
+	salt: {
+		type: String,
+		required: true,
+	},
+	hash: {
 		type: String,
 		required: true,
 	},
@@ -9,4 +18,4 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model("users", userSchema);
 
-export default User;
+module.exports = User;

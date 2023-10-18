@@ -1,16 +1,32 @@
-import dotenv from "dotenv";
-import "./utils/dbConnect.js"; //DB connection
-import express from "express";
-import userRoute from "./routes/user/userRoute.js";
+const express = require("express");
+const sessionMiddleware = require("./middlewares/session");
+const corsMiddleware = require("./middlewares/cors");
+const cookieMiddleware = require("./middlewares/cookie");
+const passportMiddleware = require("./middlewares/passport");
+const router = require("./routes/allroutes");
+const { PORT } = require("./config/index");
 
-dotenv.config();
-const app = express();
+require("./database/index").connect(); //! DB
 
-//! MIDDLEWARES
+var app = express();
+
+//! ---------------MIDDLEWARES------------------
+app.use(sessionMiddleware);
+
 app.use(express.json());
-app.use("/", userRoute);
+app.use(express.urlencoded({ extended: true }));
 
-const PORT = process.env.PORT;
-app.listen(PORT, () => {
-	console.log("App Started on port " + PORT);
+app.use(corsMiddleware);
+
+app.use(cookieMiddleware);
+
+app.use(passportMiddleware.initialize);
+app.use(passportMiddleware.session);
+
+//! -----------------ROUTES---------------------
+app.use("/", router);
+
+//! ------------------APP-----------------------
+app.listen(PORT, async () => {
+	console.log("Server started on port: " + PORT);
 });
