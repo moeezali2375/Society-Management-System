@@ -1,7 +1,10 @@
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
 const User = require("../models/user");
+const Admin = require("../models/admin");
+const Resident = require("../models/resident");
 const { validatePassword } = require("../utils/passwordUtils");
+
 //! In case we have some custom name for username and password to look for in the db
 const customFields = {
 	usernameFields: "username",
@@ -35,14 +38,26 @@ passport.serializeUser((user, done) => {
 	done(null, user.id);
 });
 
-passport.deserializeUser((userId, done) => {
-	User.findById(userId)
-		.then((user) => {
-			done(null, user);
-		})
-		.catch((error) => {
-			done(error);
-		});
+passport.deserializeUser(async (userId, done) => {
+	try {
+		const user = await User.findById(userId);
+		//! Pass admin attributes to req.user
+		if (user.isAdmin) {
+			const admin = await Admin.findOne({ userid: user._id });
+			user.name = admin.name;
+		}
+		//! Pass reesident attributes to req.user
+		else {
+			const resident = await Resident.findOne({ userid: user._id });
+			user.name = resident.name;
+			user.cnic = resident.cnic;
+			user.isVerified = resident.isVerified;
+			user.address = resident.address;
+		}
+		done(null, user);
+	} catch (error) {
+		done(error);
+	}
 });
 
 module.exports = {

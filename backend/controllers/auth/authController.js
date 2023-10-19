@@ -1,20 +1,45 @@
+const mongoose = require("mongoose");
 const User = require("../../models/user");
+const Resident = require("../../models/resident");
+const Admin = require("../../models/admin");
 const passport = require("passport");
 const { genPassword } = require("../../utils/passwordUtils");
 
 module.exports.register = async (req, res) => {
+	const session = await mongoose.startSession();
 	try {
-		const username = req.body.username;
-		const password = req.body.password;
+		session.startTransaction();
+		const { username, password, name, address, cnic } = req.body;
 		const salt_hash = genPassword(password);
-		await User.insertMany({
-			username: username,
-			salt: salt_hash.salt,
-			hash: salt_hash.hash,
-		});
-		res.status(201).send("Registered Successfully!");
+		const new_user = await User.insertMany(
+			{
+				username: username,
+				salt: salt_hash.salt,
+				hash: salt_hash.hash,
+			},
+			{
+				session: session,
+			}
+		);
+		await Resident.insertMany(
+			{
+				userid: new_user[0]._id,
+				name: name,
+				address: address,
+				cnic: cnic,
+			},
+			{ session: session }
+		);
+
+		await session.commitTransaction();
+		session.endSession();
+
+		res.status(201).send("Resident Registered Successfully!");
 	} catch (error) {
-		res.status(409).send("User already exists\n" + error.message);
+		await session.abortTransaction();
+		session.endSession();
+
+		res.status(409).send(error.message);
 	}
 };
 
@@ -27,15 +52,16 @@ module.exports.login_failure = (req, res) => {
 	res.status(403).send("Username or Password Incorrect");
 };
 
-module.exports.login_success = (req, res) => {
-	res.redirect("/auth/logged-in");
-};
-
-module.exports.logged_in = (req, res) => {
+module.exports.login_success = async (req, res) => {
 	if (req.isAuthenticated()) {
-		res.status(200).send("You are logged in!");
+		if (req.user.isAdmin) {
+			res.redirect("/admin/home");
+		} else {
+			res.redirect("/resident/home");
+		}
 	} else res.status(403).send("Login again!");
 };
+
 
 module.exports.logout = (req, res) => {
 	if (req.isAuthenticated()) {
@@ -44,4 +70,42 @@ module.exports.logout = (req, res) => {
 		});
 		res.status(200).send("Logged out successfully!");
 	} else res.status(403).send("Login again!");
+};
+
+module.exports.register_admin = async (req, res) => {
+	const session = await mongoose.startSession();
+	try {
+		const { username, password, name } = req.body;
+		const salt_hash = genPassword(password);
+		session.startTransaction();
+		const new_user = await User.insertMany(
+			{
+				username: username,
+				salt: salt_hash.salt,
+				hash: salt_hash.hash,
+				isAdmin: true,
+			},
+			{
+				session: session,
+			}
+		);
+		await Admin.insertMany(
+			{
+				userid: new_user[0]._id,
+				name: name,
+			},
+			{
+				session: session,
+			}
+		);
+		await session.commitTransaction();
+		session.endSession();
+
+		res.status(201).send("Admin Registered Successfully!");
+	} catch (error) {
+		await session.abortTransaction();
+		session.endSession();
+
+		res.status(409).send("User already exists\n" + error.message);
+	}
 };
