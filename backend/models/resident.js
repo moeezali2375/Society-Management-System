@@ -26,6 +26,18 @@ const residentSchema = new mongoose.Schema({
 		type: Boolean,
 		default: false,
 	},
+	emeter: {
+		type: Number,
+		default: 0,
+	},
+	gmeter: {
+		type: Number,
+		default: 0,
+	},
+	wmeter: {
+		type: Number,
+		default: 0,
+	},
 });
 
 const Resident = mongoose.model("residents", residentSchema);
