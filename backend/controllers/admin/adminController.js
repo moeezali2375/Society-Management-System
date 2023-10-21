@@ -88,3 +88,41 @@ module.exports.buy_house = async (req, res) => {
 		res.status(400).send(error.message);
 	}
 };
+
+module.exports.get_sold_houses = async (req, res) => {
+	try {
+		const query = {
+			$or: [{ residentId: { $ne: null } }],
+		};
+
+		const houses = await House.find(query);
+
+		res.status(200).json(houses);
+	} catch (error) {
+		res.status(400).send(error.message);
+	}
+};
+
+module.exports.sell_house = async (req, res) => {
+	try {
+		const { residentId, houseId } = req.body;
+		const house = await House.findOne({
+			_id: houseId,
+			residentId: residentId,
+		});
+		if (!house) throw new Error("No House to Sell!");
+		else {
+			await House.findOneAndUpdate(
+				{
+					_id: houseId,
+				},
+				{
+					residentId: null,
+				}
+			);
+			res.status(200).send("House Sold Successfully!");
+		}
+	} catch (error) {
+		res.status(400).send(error.message);
+	}
+};

@@ -4,10 +4,11 @@ const {
 	home,
 	get_all_residents,
 	verify_resident,
-	get_bills,
-	generate_bill,
 	get_unsold_houses,
 	buy_house,
+	get_sold_houses,
+	get_bills,
+	generate_bill,
 	sell_house,
 } = require("../../controllers/admin/adminController");
 
@@ -23,7 +24,9 @@ adminRouter.get("/unsold-houses", adminAuth, get_unsold_houses);
 
 adminRouter.put("/houses/buy", adminAuth, buy_house);
 
-// adminRouter.put("/houses/sell", adminAuth, sell_house);
+adminRouter.get("/sold-houses", adminAuth, get_sold_houses);
+
+adminRouter.put("/houses/sell", adminAuth, sell_house);
 
 // adminRouter.get("/bills", adminAuth, get_bills);
 
