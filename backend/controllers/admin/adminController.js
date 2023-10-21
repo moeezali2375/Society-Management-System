@@ -200,3 +200,27 @@ module.exports.generate_bill = async (req, res) => {
 		res.status(400).send(error.message);
 	}
 };
+
+module.exports.get_residents_houses_bills = async (req, res) => {
+	try {
+		const result = await Resident.aggregate()
+			.lookup({
+				from: "houses",
+				localField: "_id",
+				foreignField: "residentId",
+				as: "house",
+			})
+			.unwind("house")
+			.lookup({
+				from: "bills",
+				localField: "_id",
+				foreignField: "residentId",
+				as: "bills",
+			})
+			.unwind("bills")
+			.exec();
+		res.status(200).json(result);
+	} catch (error) {
+		res.status(400).send(error.message);
+	}
+};

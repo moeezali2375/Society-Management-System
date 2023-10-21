@@ -7,10 +7,10 @@ const {
 	get_unsold_houses,
 	buy_house,
 	get_sold_houses,
-	get_bills,
 	generate_bill,
 	sell_house,
 	get_residents_houses,
+	get_residents_houses_bills,
 } = require("../../controllers/admin/adminController");
 
 const adminRouter = express.Router();
@@ -35,6 +35,11 @@ adminRouter.get("/residents-houses", adminAuth, get_residents_houses);
 //! Generate a bill
 adminRouter.post("/bills/generate", adminAuth, generate_bill);
 
-// adminRouter.get("/bills", adminAuth, get_bills);
+//! residents-houses-bills
+adminRouter.get(
+	"/residents-houses-bills",
+	adminAuth,
+	get_residents_houses_bills
+);
 
 module.exports = adminRouter;
