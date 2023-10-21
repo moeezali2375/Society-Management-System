@@ -10,6 +10,7 @@ const {
 	get_bills,
 	generate_bill,
 	sell_house,
+	get_residents_houses,
 } = require("../../controllers/admin/adminController");
 
 const adminRouter = express.Router();
@@ -28,8 +29,12 @@ adminRouter.get("/sold-houses", adminAuth, get_sold_houses);
 
 adminRouter.put("/houses/sell", adminAuth, sell_house);
 
-// adminRouter.get("/bills", adminAuth, get_bills);
+//! residents-houses
+adminRouter.get("/residents-houses", adminAuth, get_residents_houses);
 
-// adminRouter.post("/bills/generate", adminAuth, generate_bill);
+//! Generate a bill
+adminRouter.post("/bills/generate", adminAuth, generate_bill);
+
+// adminRouter.get("/bills", adminAuth, get_bills);
 
 module.exports = adminRouter;

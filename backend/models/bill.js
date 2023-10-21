@@ -1,9 +1,9 @@
 const mongoose = require("mongoose");
 
 const billSchema = new mongoose.Schema({
-	userid: {
+	residentId: {
 		type: mongoose.Schema.Types.ObjectId,
-		ref: "User",
+		ref: "residents",
 		required: true,
 	},
 	isPayed: {

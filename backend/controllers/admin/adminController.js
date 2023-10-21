@@ -126,3 +126,77 @@ module.exports.sell_house = async (req, res) => {
 		res.status(400).send(error.message);
 	}
 };
+
+module.exports.get_residents_houses = async (req, res) => {
+	try {
+		const result = await Resident.aggregate()
+			.lookup({
+				from: "houses",
+				localField: "_id",
+				foreignField: "residentId",
+				as: "house",
+			})
+			.unwind("house")
+			.exec();
+		res.status(200).json(result);
+	} catch (error) {
+		res.status(400).send(error.message);
+	}
+};
+
+module.exports.generate_bill = async (req, res) => {
+	const session = await mongoose.startSession();
+	try {
+		session.startTransaction();
+		const { residentId, billType, currentUnits } = req.body;
+		const house = await House.findOne({ residentId: residentId });
+		let oldUnits = 0;
+		let amount = 0;
+		if (billType == 0) {
+			oldUnits = house.emeter;
+			await House.findOneAndUpdate(
+				{ residentId: residentId },
+				{ emeter: currentUnits },
+				{ session: session }
+			);
+			amount = calculate_bill(oldUnits, currentUnits, erate);
+		} else if (billType == 1) {
+			oldUnits = house.gmeter;
+			await House.findOneAndUpdate(
+				{ residentId: residentId },
+				{ gmeter: currentUnits },
+				{ session: session }
+			);
+			amount = calculate_bill(oldUnits, currentUnits, grate);
+		} else if (billType == 2) {
+			oldUnits = house.wmeter;
+			await House.findOneAndUpdate(
+				{ residentId: residentId },
+				{ wmeter: currentUnits },
+				{ session: session }
+			);
+			amount = calculate_bill(oldUnits, currentUnits, wrate);
+		}
+		await Bill.insertMany(
+			{
+				residentId: residentId,
+				billType: billType,
+				oldUnits: oldUnits,
+				currentUnits: currentUnits,
+				dueDate: due_date(new Date(), daylimit),
+				amount: amount,
+			},
+			{
+				session: session,
+			}
+		);
+		await session.commitTransaction();
+		session.endSession();
+
+		res.status(201).send("Bill Registered Successfully!");
+	} catch (error) {
+		await session.abortTransaction();
+		session.endSession();
+		res.status(400).send(error.message);
+	}
+};
