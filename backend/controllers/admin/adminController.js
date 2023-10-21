@@ -1,8 +1,9 @@
 const mongoose = require("mongoose");
 
 const User = require("../../models/user");
-const Bill = require("../../models/bill");
 const Resident = require("../../models/resident");
+const House = require("../../models/house");
+const Bill = require("../../models/bill");
 
 const { erate, grate, wrate, daylimit } = require("../../config/index");
 const { due_date, calculate_bill } = require("../../utils/billUtils");
@@ -32,6 +33,58 @@ module.exports.verify_resident = async (req, res) => {
 			}
 		);
 		res.status(200).send("Resident verified!");
+	} catch (error) {
+		res.status(400).send(error.message);
+	}
+};
+
+module.exports.get_houses = async (req, res) => {
+	try {
+		const query = {
+			$or: [
+				{ userid: null }, // Matches null values};
+			],
+		};
+
+		if (req.query.userid) query.userid = req.query.userid;
+		if (req.query.id) query.id = req.query.id;
+		if (req.query.block) query.block = req.query.block;
+
+		const houses = await House.find(query);
+
+		res.status(200).json(houses);
+	} catch (error) {
+		res.status(400).send(error.message);
+	}
+};
+
+module.exports.buy_house = async (req, res) => {
+	try {
+		const house = await House.findOneAndUpdate(
+			{
+				_id: req.body.houseid,
+			},
+			{
+				userid: req.body.userid,
+			}
+		);
+		res.status(200).send("House Bought Successfully!");
+	} catch (error) {
+		res.status(400).send(error.message);
+	}
+};
+
+module.exports.sell_house = async (req, res) => {
+	try {
+		const house = await House.findOneAndUpdate(
+			{
+				userid: req.body.userid,
+			},
+			{
+				userid: null,
+			}
+		);
+		res.status(200).send("House Sold Successfully!");
 	} catch (error) {
 		res.status(400).send(error.message);
 	}
