@@ -1,12 +1,12 @@
 const mongoose = require("mongoose");
 
 const houseSchema = mongoose.Schema({
-	residentid: {
+	residentId: {
 		type: mongoose.Schema.Types.ObjectId,
-		ref: "users",
-		unique: true,
+		ref: "residents",
+		default: null,
 	},
-	id: {
+	houseNo: {
 		type: Number,
 		required: true,
 		primary: true,

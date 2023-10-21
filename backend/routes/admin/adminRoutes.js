@@ -6,7 +6,7 @@ const {
 	verify_resident,
 	get_bills,
 	generate_bill,
-	get_houses,
+	get_unsold_houses,
 	buy_house,
 	sell_house,
 } = require("../../controllers/admin/adminController");
@@ -19,9 +19,9 @@ adminRouter.get("/residents", adminAuth, get_all_residents);
 
 adminRouter.put("/residents/verify", adminAuth, verify_resident);
 
-adminRouter.get("/houses", adminAuth, get_houses);
+adminRouter.get("/unsold-houses", adminAuth, get_unsold_houses);
 
-// adminRouter.put("/houses/buy", adminAuth, buy_house);
+adminRouter.put("/houses/buy", adminAuth, buy_house);
 
 // adminRouter.put("/houses/sell", adminAuth, sell_house);
 

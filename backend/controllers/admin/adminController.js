@@ -48,21 +48,42 @@ module.exports.verify_resident = async (req, res) => {
 	}
 };
 
-module.exports.get_houses = async (req, res) => {
+module.exports.get_unsold_houses = async (req, res) => {
 	try {
 		const query = {
 			$or: [
-				{ userid: null }, // Matches null values};
+				{ residentId: null }, // Matches null values};
 			],
 		};
 
-		if (req.query.userid) query.userid = req.query.userid;
-		if (req.query.id) query.id = req.query.id;
-		if (req.query.block) query.block = req.query.block;
+		// if (req.query.houseNo) query.houseNo = req.query.houseNo;
+		// if (req.query.block) query.block = req.query.block;
 
 		const houses = await House.find(query);
 
 		res.status(200).json(houses);
+	} catch (error) {
+		res.status(400).send(error.message);
+	}
+};
+
+module.exports.buy_house = async (req, res) => {
+	try {
+		const { residentId, houseId } = req.body;
+		const house = await House.findOne({ _id: houseId });
+		if (!house.residentId) {
+			await House.findOneAndUpdate(
+				{
+					_id: houseId,
+				},
+				{
+					residentId: residentId,
+				}
+			);
+			res.status(200).send("House Bought Successfully!");
+		} else {
+			throw new Error("House already Sold!");
+		}
 	} catch (error) {
 		res.status(400).send(error.message);
 	}

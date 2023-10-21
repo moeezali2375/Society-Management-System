@@ -2,43 +2,43 @@ const House = require("../models/house");
 
 const array = [
 	{
-		id: 1,
+		houseNo: 1,
 		block: "A",
 	},
 	{
-		id: 2,
+		houseNo: 2,
 		block: "A",
 	},
 	{
-		id: 3,
+		houseNo: 3,
 		block: "A",
 	},
 	{
-		id: 4,
+		houseNo: 4,
 		block: "A",
 	},
 	{
-		id: 5,
+		houseNo: 5,
 		block: "A",
 	},
 	{
-		id: 1,
+		houseNo: 1,
 		block: "B",
 	},
 	{
-		id: 2,
+		houseNo: 2,
 		block: "B",
 	},
 	{
-		id: 3,
+		houseNo: 3,
 		block: "B",
 	},
 	{
-		id: 4,
+		houseNo: 4,
 		block: "B",
 	},
 	{
-		id: 5,
+		houseNo: 5,
 		block: "B",
 	},
 ];
