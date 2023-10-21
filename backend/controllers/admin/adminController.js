@@ -14,7 +14,13 @@ module.exports.home = (req, res) => {
 
 module.exports.get_all_residents = async (req, res) => {
 	try {
-		const all_residents = await Resident.find();
+		const query = {};
+
+		if (req.query.isVerified) query.isVerified = req.query.isVerified;
+		if (req.query.userid) query.userid = req.query.userid;
+
+		const all_residents = await Resident.find(query);
+
 		res.status(200).json(all_residents);
 	} catch (error) {
 		res.status(400).send(error.message);
