@@ -40,19 +40,34 @@ passport.serializeUser((user, done) => {
 
 passport.deserializeUser(async (userId, done) => {
 	try {
-		const user = await User.findById(userId);
+		let user = await User.findById(userId);
 		//! Pass admin attributes to req.user
 		if (user.isAdmin) {
-			const admin = await Admin.findOne({ userid: user._id });
-			user.name = admin.name;
+			const result = await Admin.aggregate()
+				.match({ userId: user._id })
+				.lookup({
+					from: "users",
+					localField: "userId",
+					foreignField: "_id",
+					as: "user",
+				})
+				.unwind("user")
+				.exec();
+			user = result[0];
 		}
-		//! Pass reesident attributes to req.user
+		//! Pass resident attributes to req.user
 		else {
-			const resident = await Resident.findOne({ userid: user._id });
-			user.name = resident.name;
-			user.cnic = resident.cnic;
-			user.isVerified = resident.isVerified;
-			user.address = resident.address;
+			const result = await Resident.aggregate()
+				.match({ userId: user._id })
+				.lookup({
+					from: "users",
+					localField: "userId",
+					foreignField: "_id",
+					as: "user",
+				})
+				.unwind("user")
+				.exec();
+			user = result[0];
 		}
 		done(null, user);
 	} catch (error) {

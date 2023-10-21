@@ -1,9 +1,9 @@
 const mongoose = require("mongoose");
 
 const adminSchema = new mongoose.Schema({
-	userid: {
+	userId: {
 		type: mongoose.Schema.Types.ObjectId,
-		ref: "User",
+		ref: "users",
 		unique: true,
 		required: true,
 	},

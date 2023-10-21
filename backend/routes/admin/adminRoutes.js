@@ -21,12 +21,12 @@ adminRouter.put("/residents/verify", adminAuth, verify_resident);
 
 adminRouter.get("/houses", adminAuth, get_houses);
 
-adminRouter.put("/houses/buy", adminAuth, buy_house);
+// adminRouter.put("/houses/buy", adminAuth, buy_house);
 
-adminRouter.put("/houses/sell", adminAuth, sell_house);
+// adminRouter.put("/houses/sell", adminAuth, sell_house);
 
-adminRouter.get("/bills", adminAuth, get_bills);
+// adminRouter.get("/bills", adminAuth, get_bills);
 
-adminRouter.post("/bills/generate", adminAuth, generate_bill);
+// adminRouter.post("/bills/generate", adminAuth, generate_bill);
 
 module.exports = adminRouter;

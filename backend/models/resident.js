@@ -1,9 +1,9 @@
 const mongoose = require("mongoose");
 
 const residentSchema = new mongoose.Schema({
-	userid: {
+	userId: {
 		type: mongoose.Schema.Types.ObjectId,
-		ref: "User",
+		ref: "users",
 		unique: true,
 		required: true,
 	},
@@ -25,18 +25,6 @@ const residentSchema = new mongoose.Schema({
 	isVerified: {
 		type: Boolean,
 		default: false,
-	},
-	emeter: {
-		type: Number,
-		default: 0,
-	},
-	gmeter: {
-		type: Number,
-		default: 0,
-	},
-	wmeter: {
-		type: Number,
-		default: 0,
 	},
 });
 

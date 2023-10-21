@@ -23,7 +23,7 @@ module.exports.register = async (req, res) => {
 		);
 		await Resident.insertMany(
 			{
-				userid: new_user[0]._id,
+				userId: new_user[0]._id,
 				name: name,
 				address: address,
 				cnic: cnic,
@@ -54,14 +54,13 @@ module.exports.login_failure = (req, res) => {
 
 module.exports.login_success = async (req, res) => {
 	if (req.isAuthenticated()) {
-		if (req.user.isAdmin) {
+		if (req.user.user.isAdmin) {
 			res.redirect("/admin/home");
 		} else {
 			res.redirect("/resident/home");
 		}
 	} else res.status(403).send("Login again!");
 };
-
 
 module.exports.logout = (req, res) => {
 	if (req.isAuthenticated()) {
@@ -91,7 +90,7 @@ module.exports.register_admin = async (req, res) => {
 		);
 		await Admin.insertMany(
 			{
-				userid: new_user[0]._id,
+				userId: new_user[0]._id,
 				name: name,
 			},
 			{
